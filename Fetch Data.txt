@@ -1,0 +1,57 @@
+//ApiFetchintomobile
+
+
+public class ApiActivity extends AppCompatActivity {
+    private static final String base_url= "https://jsonplaceholder.typicode.com/";
+    Retrofit retrofit2;
+    TextView tvdemo1;
+    Button btnnext;
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_api);
+        tvdemo1= findViewById(R.id.tvdemo1);
+        btnnext = findViewById(R.id.btnnext);
+        tvdemo1.setText("");
+
+        retrofit2 = new Retrofit.Builder()
+                .baseUrl(base_url)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        naveenInterface api = retrofit2.create(naveenInterface.class);
+
+        Call<List<modelnaveen>>call= api.listmodel();
+        call.enqueue(new Callback<List<modelnaveen>>() {
+            @Override
+            public void onResponse(Call<List<modelnaveen>> call, Response<List<modelnaveen>> response) {
+
+                List<modelnaveen>data = response.body();
+
+                Toast.makeText(ApiActivity.this, "Succesfully", Toast.LENGTH_SHORT).show();
+                for (int i = 0; i<data.size();i++)
+                    tvdemo1.append("SL NO "+data.get(i).getId()+"\n username:  "+data.get(i).getUsername()+"\n email: "+data.get(i).getEmail()+ "\n\n\n");
+
+
+            }
+
+            @Override
+            public void onFailure(Call<List<modelnaveen>> call, Throwable t) {
+                Toast.makeText(ApiActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+
+            }
+        });
+        btnnext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(),NextActivity.class);
+                startActivity(intent);
+            }
+        });
+
+
+
+    }
+}
